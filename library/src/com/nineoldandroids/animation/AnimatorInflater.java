@@ -17,9 +17,9 @@ package com.nineoldandroids.animation;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.content.res.Resources.NotFoundException;
 import android.content.res.TypedArray;
 import android.content.res.XmlResourceParser;
-import android.content.res.Resources.NotFoundException;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.util.Xml;
@@ -32,25 +32,26 @@ import java.util.ArrayList;
 
 /**
  * This class is used to instantiate animator XML files into Animator objects.
- * <p>
+ * <p/>
  * For performance reasons, inflation relies heavily on pre-processing of
  * XML files that is done at build time. Therefore, it is not currently possible
  * to use this inflater with an XmlPullParser over a plain XML file at runtime;
  * it only works with an XmlPullParser returned from a compiled resource (R.
  * <em>something</em> file.)
  */
-public class AnimatorInflater {
-    private static final int[] AnimatorSet = new int[] {
+public class AnimatorInflater
+{
+    private static final int[] AnimatorSet = new int[]{
         /* 0 */ android.R.attr.ordering,
     };
     private static final int AnimatorSet_ordering = 0;
 
-    private static final int[] PropertyAnimator = new int[] {
+    private static final int[] PropertyAnimator = new int[]{
         /* 0 */ android.R.attr.propertyName,
     };
     private static final int PropertyAnimator_propertyName = 0;
 
-    private static final int[] Animator = new int[] {
+    private static final int[] Animator = new int[]{
         /* 0 */ android.R.attr.interpolator,
         /* 1 */ android.R.attr.duration,
         /* 2 */ android.R.attr.startOffset,
@@ -78,7 +79,7 @@ public class AnimatorInflater {
     /**
      * Enum values used in XML attributes to indicate the value for mValueType
      */
-    private static final int VALUE_TYPE_FLOAT       = 0;
+    private static final int VALUE_TYPE_FLOAT = 0;
     //private static final int VALUE_TYPE_INT         = 1;
     //private static final int VALUE_TYPE_COLOR       = 4;
     //private static final int VALUE_TYPE_CUSTOM      = 5;
@@ -87,43 +88,56 @@ public class AnimatorInflater {
      * Loads an {@link Animator} object from a resource
      *
      * @param context Application context used to access resources
-     * @param id The resource id of the animation to load
+     * @param id      The resource id of the animation to load
      * @return The animator object reference by the specified id
      * @throws android.content.res.Resources.NotFoundException when the animation cannot be loaded
      */
     public static Animator loadAnimator(Context context, int id)
-            throws NotFoundException {
+            throws NotFoundException
+    {
 
         XmlResourceParser parser = null;
-        try {
+        try
+        {
             parser = context.getResources().getAnimation(id);
             return createAnimatorFromXml(context, parser);
-        } catch (XmlPullParserException ex) {
+        }
+        catch (XmlPullParserException ex)
+        {
             Resources.NotFoundException rnf =
                     new Resources.NotFoundException("Can't load animation resource ID #0x" +
-                    Integer.toHexString(id));
+                                                            Integer.toHexString(id));
             rnf.initCause(ex);
             throw rnf;
-        } catch (IOException ex) {
+        }
+        catch (IOException ex)
+        {
             Resources.NotFoundException rnf =
                     new Resources.NotFoundException("Can't load animation resource ID #0x" +
-                    Integer.toHexString(id));
+                                                            Integer.toHexString(id));
             rnf.initCause(ex);
             throw rnf;
-        } finally {
-            if (parser != null) parser.close();
+        }
+        finally
+        {
+            if (parser != null)
+            {
+                parser.close();
+            }
         }
     }
 
     private static Animator createAnimatorFromXml(Context c, XmlPullParser parser)
-            throws XmlPullParserException, IOException {
+            throws XmlPullParserException, IOException
+    {
 
         return createAnimatorFromXml(c, parser, Xml.asAttributeSet(parser), null, 0);
     }
 
     private static Animator createAnimatorFromXml(Context c, XmlPullParser parser,
-            AttributeSet attrs, AnimatorSet parent, int sequenceOrdering)
-            throws XmlPullParserException, IOException {
+                                                  AttributeSet attrs, AnimatorSet parent, int sequenceOrdering)
+            throws XmlPullParserException, IOException
+    {
 
         Animator anim = null;
         ArrayList<Animator> childAnims = null;
@@ -132,20 +146,27 @@ public class AnimatorInflater {
         int type;
         int depth = parser.getDepth();
 
-        while (((type=parser.next()) != XmlPullParser.END_TAG || parser.getDepth() > depth)
-               && type != XmlPullParser.END_DOCUMENT) {
+        while (((type = parser.next()) != XmlPullParser.END_TAG || parser.getDepth() > depth)
+                && type != XmlPullParser.END_DOCUMENT)
+        {
 
-            if (type != XmlPullParser.START_TAG) {
+            if (type != XmlPullParser.START_TAG)
+            {
                 continue;
             }
 
-            String  name = parser.getName();
+            String name = parser.getName();
 
-            if (name.equals("objectAnimator")) {
+            if (name.equals("objectAnimator"))
+            {
                 anim = loadObjectAnimator(c, attrs);
-            } else if (name.equals("animator")) {
+            }
+            else if (name.equals("animator"))
+            {
                 anim = loadAnimator(c, attrs, null);
-            } else if (name.equals("set")) {
+            }
+            else if (name.equals("set"))
+            {
                 anim = new AnimatorSet();
                 TypedArray a = c.obtainStyledAttributes(attrs,
                         /*com.android.internal.R.styleable.*/AnimatorSet);
@@ -154,28 +175,37 @@ public class AnimatorInflater {
                 a.getValue(/*com.android.internal.R.styleable.*/AnimatorSet_ordering, orderingValue);
                 int ordering = orderingValue.type == TypedValue.TYPE_INT_DEC ? orderingValue.data : TOGETHER;
 
-                createAnimatorFromXml(c, parser, attrs, (AnimatorSet) anim,  ordering);
+                createAnimatorFromXml(c, parser, attrs, (AnimatorSet) anim, ordering);
                 a.recycle();
-            } else {
+            }
+            else
+            {
                 throw new RuntimeException("Unknown animator name: " + parser.getName());
             }
 
-            if (parent != null) {
-                if (childAnims == null) {
+            if (parent != null)
+            {
+                if (childAnims == null)
+                {
                     childAnims = new ArrayList<Animator>();
                 }
                 childAnims.add(anim);
             }
         }
-        if (parent != null && childAnims != null) {
+        if (parent != null && childAnims != null)
+        {
             Animator[] animsArray = new Animator[childAnims.size()];
             int index = 0;
-            for (Animator a : childAnims) {
+            for (Animator a : childAnims)
+            {
                 animsArray[index++] = a;
             }
-            if (sequenceOrdering == TOGETHER) {
+            if (sequenceOrdering == TOGETHER)
+            {
                 parent.playTogether(animsArray);
-            } else {
+            }
+            else
+            {
                 parent.playSequentially(animsArray);
             }
         }
@@ -185,7 +215,8 @@ public class AnimatorInflater {
     }
 
     private static ObjectAnimator loadObjectAnimator(Context context, AttributeSet attrs)
-            throws NotFoundException {
+            throws NotFoundException
+    {
 
         ObjectAnimator anim = new ObjectAnimator();
 
@@ -208,10 +239,11 @@ public class AnimatorInflater {
      * attributes set.
      *
      * @param context the application environment
-     * @param attrs the set of attributes holding the animation parameters
+     * @param attrs   the set of attributes holding the animation parameters
      */
     private static ValueAnimator loadAnimator(Context context, AttributeSet attrs, ValueAnimator anim)
-            throws NotFoundException {
+            throws NotFoundException
+    {
 
         TypedArray a =
                 context.obtainStyledAttributes(attrs, /*com.android.internal.R.styleable.*/Animator);
@@ -221,9 +253,10 @@ public class AnimatorInflater {
         long startDelay = a.getInt(/*com.android.internal.R.styleable.*/Animator_startOffset, 0);
 
         int valueType = a.getInt(/*com.android.internal.R.styleable.*/Animator_valueType,
-                VALUE_TYPE_FLOAT);
+                                 VALUE_TYPE_FLOAT);
 
-        if (anim == null) {
+        if (anim == null)
+        {
             anim = new ValueAnimator();
         }
         //TypeEvaluator evaluator = null;
@@ -242,73 +275,114 @@ public class AnimatorInflater {
 
         if ((hasFrom && (fromType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
                 (fromType <= TypedValue.TYPE_LAST_COLOR_INT)) ||
-            (hasTo && (toType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
-                (toType <= TypedValue.TYPE_LAST_COLOR_INT))) {
+                (hasTo && (toType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
+                        (toType <= TypedValue.TYPE_LAST_COLOR_INT)))
+        {
             // special case for colors: ignore valueType and get ints
             getFloats = false;
             anim.setEvaluator(new ArgbEvaluator());
         }
 
-        if (getFloats) {
+        if (getFloats)
+        {
             float valueFrom;
             float valueTo;
-            if (hasFrom) {
-                if (fromType == TypedValue.TYPE_DIMENSION) {
+            if (hasFrom)
+            {
+                if (fromType == TypedValue.TYPE_DIMENSION)
+                {
                     valueFrom = a.getDimension(valueFromIndex, 0f);
-                } else {
+                }
+                else
+                {
                     valueFrom = a.getFloat(valueFromIndex, 0f);
                 }
-                if (hasTo) {
-                    if (toType == TypedValue.TYPE_DIMENSION) {
+                if (hasTo)
+                {
+                    if (toType == TypedValue.TYPE_DIMENSION)
+                    {
                         valueTo = a.getDimension(valueToIndex, 0f);
-                    } else {
+                    }
+                    else
+                    {
                         valueTo = a.getFloat(valueToIndex, 0f);
                     }
                     anim.setFloatValues(valueFrom, valueTo);
-                } else {
+                }
+                else
+                {
                     anim.setFloatValues(valueFrom);
                 }
-            } else {
-                if (toType == TypedValue.TYPE_DIMENSION) {
+            }
+            else
+            {
+                if (toType == TypedValue.TYPE_DIMENSION)
+                {
                     valueTo = a.getDimension(valueToIndex, 0f);
-                } else {
+                }
+                else
+                {
                     valueTo = a.getFloat(valueToIndex, 0f);
                 }
                 anim.setFloatValues(valueTo);
             }
-        } else {
+        }
+        else
+        {
             int valueFrom;
             int valueTo;
-            if (hasFrom) {
-                if (fromType == TypedValue.TYPE_DIMENSION) {
+            if (hasFrom)
+            {
+                if (fromType == TypedValue.TYPE_DIMENSION)
+                {
                     valueFrom = (int) a.getDimension(valueFromIndex, 0f);
-                } else if ((fromType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
-                        (fromType <= TypedValue.TYPE_LAST_COLOR_INT)) {
+                }
+                else if ((fromType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
+                        (fromType <= TypedValue.TYPE_LAST_COLOR_INT))
+                {
                     valueFrom = a.getColor(valueFromIndex, 0);
-                } else {
+                }
+                else
+                {
                     valueFrom = a.getInt(valueFromIndex, 0);
                 }
-                if (hasTo) {
-                    if (toType == TypedValue.TYPE_DIMENSION) {
+                if (hasTo)
+                {
+                    if (toType == TypedValue.TYPE_DIMENSION)
+                    {
                         valueTo = (int) a.getDimension(valueToIndex, 0f);
-                    } else if ((toType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
-                            (toType <= TypedValue.TYPE_LAST_COLOR_INT)) {
+                    }
+                    else if ((toType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
+                            (toType <= TypedValue.TYPE_LAST_COLOR_INT))
+                    {
                         valueTo = a.getColor(valueToIndex, 0);
-                    } else {
+                    }
+                    else
+                    {
                         valueTo = a.getInt(valueToIndex, 0);
                     }
                     anim.setIntValues(valueFrom, valueTo);
-                } else {
+                }
+                else
+                {
                     anim.setIntValues(valueFrom);
                 }
-            } else {
-                if (hasTo) {
-                    if (toType == TypedValue.TYPE_DIMENSION) {
+            }
+            else
+            {
+                if (hasTo)
+                {
+                    if (toType == TypedValue.TYPE_DIMENSION)
+                    {
                         valueTo = (int) a.getDimension(valueToIndex, 0f);
-                    } else if ((toType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
-                        (toType <= TypedValue.TYPE_LAST_COLOR_INT)) {
+                    }
+                    else if ((toType >= TypedValue.TYPE_FIRST_COLOR_INT) &&
+                            (toType <= TypedValue.TYPE_LAST_COLOR_INT))
+                    {
                         valueTo = a.getColor(valueToIndex, 0);
-                    } else {
+                    }
+                    else
+                    {
                         valueTo = a.getInt(valueToIndex, 0);
                     }
                     anim.setIntValues(valueTo);
@@ -319,14 +393,17 @@ public class AnimatorInflater {
         anim.setDuration(duration);
         anim.setStartDelay(startDelay);
 
-        if (a.hasValue(/*com.android.internal.R.styleable.*/Animator_repeatCount)) {
+        if (a.hasValue(/*com.android.internal.R.styleable.*/Animator_repeatCount))
+        {
             anim.setRepeatCount(
                     a.getInt(/*com.android.internal.R.styleable.*/Animator_repeatCount, 0));
         }
-        if (a.hasValue(/*com.android.internal.R.styleable.*/Animator_repeatMode)) {
+        if (a.hasValue(/*com.android.internal.R.styleable.*/Animator_repeatMode))
+        {
             anim.setRepeatMode(
                     a.getInt(/*com.android.internal.R.styleable.*/Animator_repeatMode,
-                            ValueAnimator.RESTART));
+                             ValueAnimator.RESTART)
+            );
         }
         //if (evaluator != null) {
         //    anim.setEvaluator(evaluator);
@@ -334,7 +411,8 @@ public class AnimatorInflater {
 
         final int resID =
                 a.getResourceId(/*com.android.internal.R.styleable.*/Animator_interpolator, 0);
-        if (resID > 0) {
+        if (resID > 0)
+        {
             anim.setInterpolator(AnimationUtils.loadInterpolator(context, resID));
         }
         a.recycle();

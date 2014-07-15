@@ -16,11 +16,12 @@
 
 package com.nineoldandroids.view;
 
-import java.util.WeakHashMap;
 import android.os.Build;
 import android.view.View;
 import android.view.animation.Interpolator;
 import com.nineoldandroids.animation.Animator;
+
+import java.util.WeakHashMap;
 
 /**
  * This class enables automatic and optimized animation of select properties on View objects.
@@ -30,20 +31,20 @@ import com.nineoldandroids.animation.Animator;
  * appropriately. But if several properties are animated simultaneously, or if you just want a
  * more convenient syntax to animate a specific property, then ViewPropertyAnimator might be
  * more well-suited to the task.
- *
+ * <p/>
  * <p>This class may provide better performance for several simultaneous animations, because
  * it will optimize invalidate calls to take place only once for several properties instead of each
  * animated property independently causing its own invalidation. Also, the syntax of using this
  * class could be easier to use because the caller need only tell the View object which
  * property to animate, and the value to animate either to or by, and this class handles the
  * details of configuring the underlying Animator class and starting it.</p>
- *
+ * <p/>
  * <p>This class is not constructed by the caller, but rather by the View whose properties
  * it will animate. Calls to {@link android.view.View#animate()} will return a reference
  * to the appropriate ViewPropertyAnimator object for that View.</p>
- *
  */
-public abstract class ViewPropertyAnimator {
+public abstract class ViewPropertyAnimator
+{
     private static final WeakHashMap<View, ViewPropertyAnimator> ANIMATORS =
             new WeakHashMap<View, ViewPropertyAnimator>(0);
 
@@ -54,15 +55,22 @@ public abstract class ViewPropertyAnimator {
      * @param view View to animate.
      * @return The ViewPropertyAnimator associated with this View.
      */
-    public static ViewPropertyAnimator animate(View view) {
+    public static ViewPropertyAnimator animate(View view)
+    {
         ViewPropertyAnimator animator = ANIMATORS.get(view);
-        if (animator == null) {
+        if (animator == null)
+        {
             final int version = Integer.valueOf(Build.VERSION.SDK);
-            if (version >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (version >= Build.VERSION_CODES.ICE_CREAM_SANDWICH)
+            {
                 animator = new ViewPropertyAnimatorICS(view);
-            } else if (version >= Build.VERSION_CODES.HONEYCOMB) {
+            }
+            else if (version >= Build.VERSION_CODES.HONEYCOMB)
+            {
                 animator = new ViewPropertyAnimatorHC(view);
-            } else {
+            }
+            else
+            {
                 animator = new ViewPropertyAnimatorPreHC(view);
             }
             ANIMATORS.put(view, animator);
@@ -70,34 +78,34 @@ public abstract class ViewPropertyAnimator {
         return animator;
     }
 
-
-    /**
-     * Sets the duration for the underlying animator that animates the requested properties.
-     * By default, the animator uses the default value for ValueAnimator. Calling this method
-     * will cause the declared value to be used instead.
-     * @param duration The length of ensuing property animations, in milliseconds. The value
-     * cannot be negative.
-     * @return This object, allowing calls to methods in this class to be chained.
-     */
-    public abstract ViewPropertyAnimator setDuration(long duration);
-
     /**
      * Returns the current duration of property animations. If the duration was set on this
      * object, that value is returned. Otherwise, the default value of the underlying Animator
      * is returned.
      *
-     * @see #setDuration(long)
      * @return The duration of animations, in milliseconds.
+     * @see #setDuration(long)
      */
     public abstract long getDuration();
+
+    /**
+     * Sets the duration for the underlying animator that animates the requested properties.
+     * By default, the animator uses the default value for ValueAnimator. Calling this method
+     * will cause the declared value to be used instead.
+     *
+     * @param duration The length of ensuing property animations, in milliseconds. The value
+     *                 cannot be negative.
+     * @return This object, allowing calls to methods in this class to be chained.
+     */
+    public abstract ViewPropertyAnimator setDuration(long duration);
 
     /**
      * Returns the current startDelay of property animations. If the startDelay was set on this
      * object, that value is returned. Otherwise, the default value of the underlying Animator
      * is returned.
      *
-     * @see #setStartDelay(long)
      * @return The startDelay of animations, in milliseconds.
+     * @see #setStartDelay(long)
      */
     public abstract long getStartDelay();
 
@@ -105,8 +113,9 @@ public abstract class ViewPropertyAnimator {
      * Sets the startDelay for the underlying animator that animates the requested properties.
      * By default, the animator uses the default value for ValueAnimator. Calling this method
      * will cause the declared value to be used instead.
+     *
      * @param startDelay The delay of ensuing property animations, in milliseconds. The value
-     * cannot be negative.
+     *                   cannot be negative.
      * @return This object, allowing calls to methods in this class to be chained.
      */
     public abstract ViewPropertyAnimator setStartDelay(long startDelay);
@@ -149,8 +158,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setX(float)
      */
     public abstract ViewPropertyAnimator x(float value);
 
@@ -159,8 +168,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setX(float)
      */
     public abstract ViewPropertyAnimator xBy(float value);
 
@@ -169,8 +178,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setY(float)
      */
     public abstract ViewPropertyAnimator y(float value);
 
@@ -179,8 +188,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setY(float)
      */
     public abstract ViewPropertyAnimator yBy(float value);
 
@@ -189,8 +198,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setRotation(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setRotation(float)
      */
     public abstract ViewPropertyAnimator rotation(float value);
 
@@ -199,8 +208,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setRotation(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setRotation(float)
      */
     public abstract ViewPropertyAnimator rotationBy(float value);
 
@@ -209,8 +218,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setRotationX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setRotationX(float)
      */
     public abstract ViewPropertyAnimator rotationX(float value);
 
@@ -219,8 +228,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setRotationX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setRotationX(float)
      */
     public abstract ViewPropertyAnimator rotationXBy(float value);
 
@@ -229,8 +238,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setRotationY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setRotationY(float)
      */
     public abstract ViewPropertyAnimator rotationY(float value);
 
@@ -239,8 +248,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setRotationY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setRotationY(float)
      */
     public abstract ViewPropertyAnimator rotationYBy(float value);
 
@@ -249,8 +258,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setTranslationX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setTranslationX(float)
      */
     public abstract ViewPropertyAnimator translationX(float value);
 
@@ -259,8 +268,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setTranslationX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setTranslationX(float)
      */
     public abstract ViewPropertyAnimator translationXBy(float value);
 
@@ -269,8 +278,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setTranslationY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setTranslationY(float)
      */
     public abstract ViewPropertyAnimator translationY(float value);
 
@@ -279,8 +288,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setTranslationY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setTranslationY(float)
      */
     public abstract ViewPropertyAnimator translationYBy(float value);
 
@@ -289,8 +298,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setScaleX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setScaleX(float)
      */
     public abstract ViewPropertyAnimator scaleX(float value);
 
@@ -299,8 +308,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setScaleX(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setScaleX(float)
      */
     public abstract ViewPropertyAnimator scaleXBy(float value);
 
@@ -309,8 +318,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setScaleY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setScaleY(float)
      */
     public abstract ViewPropertyAnimator scaleY(float value);
 
@@ -319,8 +328,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setScaleY(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setScaleY(float)
      */
     public abstract ViewPropertyAnimator scaleYBy(float value);
 
@@ -329,8 +338,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The value to be animated to.
-     * @see View#setAlpha(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setAlpha(float)
      */
     public abstract ViewPropertyAnimator alpha(float value);
 
@@ -339,8 +348,8 @@ public abstract class ViewPropertyAnimator {
      * specified value. Animations already running on the property will be canceled.
      *
      * @param value The amount to be animated by, as an offset from the current value.
-     * @see View#setAlpha(float)
      * @return This object, allowing calls to methods in this class to be chained.
+     * @see View#setAlpha(float)
      */
     public abstract ViewPropertyAnimator alphaBy(float value);
 }

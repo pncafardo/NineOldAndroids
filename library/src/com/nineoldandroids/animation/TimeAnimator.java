@@ -9,24 +9,31 @@ package com.nineoldandroids.animation;
  *
  * @hide
  */
-public class TimeAnimator extends ValueAnimator {
+public class TimeAnimator extends ValueAnimator
+{
 
     private TimeListener mListener;
     private long mPreviousTime = -1;
 
     @Override
-    boolean animationFrame(long currentTime) {
-        if (mPlayingState == STOPPED) {
+    boolean animationFrame(long currentTime)
+    {
+        if (mPlayingState == STOPPED)
+        {
             mPlayingState = RUNNING;
-            if (mSeekTime < 0) {
+            if (mSeekTime < 0)
+            {
                 mStartTime = currentTime;
-            } else {
+            }
+            else
+            {
                 mStartTime = currentTime - mSeekTime;
                 // Now that we're playing, reset the seek time
                 mSeekTime = -1;
             }
         }
-        if (mListener != null) {
+        if (mListener != null)
+        {
             long totalTime = currentTime - mStartTime;
             long deltaTime = (mPreviousTime < 0) ? 0 : (currentTime - mPreviousTime);
             mPreviousTime = currentTime;
@@ -41,17 +48,20 @@ public class TimeAnimator extends ValueAnimator {
      *
      * @param listener the listener to be set.
      */
-    public void setTimeListener(TimeListener listener) {
+    public void setTimeListener(TimeListener listener)
+    {
         mListener = listener;
     }
 
     @Override
-    void animateValue(float fraction) {
+    void animateValue(float fraction)
+    {
         // Noop
     }
 
     @Override
-    void initAnimation() {
+    void initAnimation()
+    {
         // noop
     }
 
@@ -64,7 +74,8 @@ public class TimeAnimator extends ValueAnimator {
      *
      * @hide
      */
-    public static interface TimeListener {
+    public static interface TimeListener
+    {
         /**
          * <p>Notifies listeners of the occurrence of another frame of the animation,
          * along with information about the elapsed time.</p>

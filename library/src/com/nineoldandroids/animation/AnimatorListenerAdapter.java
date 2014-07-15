@@ -21,34 +21,39 @@ package com.nineoldandroids.animation;
  * Any custom listener that cares only about a subset of the methods of this listener can
  * simply subclass this adapter class instead of implementing the interface directly.
  */
-public abstract class AnimatorListenerAdapter implements Animator.AnimatorListener {
+public abstract class AnimatorListenerAdapter implements Animator.AnimatorListener
+{
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onAnimationCancel(Animator animation) {
+    public void onAnimationCancel(Animator animation)
+    {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onAnimationEnd(Animator animation) {
+    public void onAnimationEnd(Animator animation)
+    {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onAnimationRepeat(Animator animation) {
+    public void onAnimationRepeat(Animator animation)
+    {
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public void onAnimationStart(Animator animation) {
+    public void onAnimationStart(Animator animation)
+    {
     }
 
 }

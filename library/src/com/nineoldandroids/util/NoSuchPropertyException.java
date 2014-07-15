@@ -21,9 +21,11 @@ package com.nineoldandroids.util;
  *
  * @see Property#of(java.lang.Class, java.lang.Class, java.lang.String)
  */
-public class NoSuchPropertyException extends RuntimeException {
+public class NoSuchPropertyException extends RuntimeException
+{
 
-    public NoSuchPropertyException(String s) {
+    public NoSuchPropertyException(String s)
+    {
         super(s);
     }
 

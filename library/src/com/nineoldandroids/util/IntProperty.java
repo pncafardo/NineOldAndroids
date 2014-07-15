@@ -23,12 +23,13 @@ package com.nineoldandroids.util;
  * <code>Integer</code> class.
  *
  * @param <T> The class on which the Property is declared.
- *
  * @hide
  */
-public abstract class IntProperty<T> extends Property<T, Integer> {
+public abstract class IntProperty<T> extends Property<T, Integer>
+{
 
-    public IntProperty(String name) {
+    public IntProperty(String name)
+    {
         super(Integer.class, name);
     }
 
@@ -39,7 +40,8 @@ public abstract class IntProperty<T> extends Property<T, Integer> {
     public abstract void setValue(T object, int value);
 
     @Override
-    final public void set(T object, Integer value) {
+    final public void set(T object, Integer value)
+    {
         set(object, value.intValue());
     }
 

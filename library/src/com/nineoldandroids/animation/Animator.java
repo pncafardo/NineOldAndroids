@@ -16,15 +16,16 @@
 
 package com.nineoldandroids.animation;
 
-import java.util.ArrayList;
-
 import android.view.animation.Interpolator;
+
+import java.util.ArrayList;
 
 /**
  * This is the superclass for classes which provide basic support for animations which can be
  * started, ended, and have <code>AnimatorListeners</code> added to them.
  */
-public abstract class Animator implements Cloneable {
+public abstract class Animator implements Cloneable
+{
 
 
     /**
@@ -37,15 +38,15 @@ public abstract class Animator implements Cloneable {
      * running after that delay elapses. A non-delayed animation will have its initial
      * value(s) set immediately, followed by calls to
      * {@link AnimatorListener#onAnimationStart(Animator)} for any listeners of this animator.
-     *
+     * <p/>
      * <p>The animation started by calling this method will be run on the thread that called
      * this method. This thread should have a Looper on it (a runtime exception will be thrown if
      * this is not the case). Also, if the animation will animate
      * properties of objects in the view hierarchy, then the calling thread should be the UI
      * thread for that view hierarchy.</p>
-     *
      */
-    public void start() {
+    public void start()
+    {
     }
 
     /**
@@ -54,10 +55,11 @@ public abstract class Animator implements Cloneable {
      * {@link android.animation.Animator.AnimatorListener#onAnimationCancel(Animator)} to
      * its listeners, followed by an
      * {@link android.animation.Animator.AnimatorListener#onAnimationEnd(Animator)} message.
-     *
+     * <p/>
      * <p>This method must be called on the thread that is running the animation.</p>
      */
-    public void cancel() {
+    public void cancel()
+    {
     }
 
     /**
@@ -65,10 +67,11 @@ public abstract class Animator implements Cloneable {
      * animated, then calling the
      * {@link android.animation.Animator.AnimatorListener#onAnimationEnd(Animator)} method on
      * its listeners.
-     *
+     * <p/>
      * <p>This method must be called on the thread that is running the animation.</p>
      */
-    public void end() {
+    public void end()
+    {
     }
 
     /**
@@ -82,18 +85,10 @@ public abstract class Animator implements Cloneable {
     /**
      * The amount of time, in milliseconds, to delay starting the animation after
      * {@link #start()} is called.
-
+     *
      * @param startDelay The amount of the delay, in milliseconds
      */
     public abstract void setStartDelay(long startDelay);
-
-
-    /**
-     * Sets the length of the animation.
-     *
-     * @param duration The length of the animation, in milliseconds.
-     */
-    public abstract Animator setDuration(long duration);
 
     /**
      * Gets the length of the animation.
@@ -101,6 +96,13 @@ public abstract class Animator implements Cloneable {
      * @return The length of the animation, in milliseconds.
      */
     public abstract long getDuration();
+
+    /**
+     * Sets the length of the animation.
+     *
+     * @param duration The length of the animation, in milliseconds.
+     */
+    public abstract Animator setDuration(long duration);
 
     /**
      * The time interpolator used in calculating the elapsed fraction of this animation. The
@@ -129,7 +131,8 @@ public abstract class Animator implements Cloneable {
      *
      * @return Whether the Animator has been started and not yet ended.
      */
-    public boolean isStarted() {
+    public boolean isStarted()
+    {
         // Default method returns value for isRunning(). Subclasses should override to return a
         // real value.
         return isRunning();
@@ -141,8 +144,10 @@ public abstract class Animator implements Cloneable {
      *
      * @param listener the listener to be added to the current set of listeners for this animation.
      */
-    public void addListener(AnimatorListener listener) {
-        if (mListeners == null) {
+    public void addListener(AnimatorListener listener)
+    {
+        if (mListeners == null)
+        {
             mListeners = new ArrayList<AnimatorListener>();
         }
         mListeners.add(listener);
@@ -154,12 +159,15 @@ public abstract class Animator implements Cloneable {
      * @param listener the listener to be removed from the current set of listeners for this
      *                 animation.
      */
-    public void removeListener(AnimatorListener listener) {
-        if (mListeners == null) {
+    public void removeListener(AnimatorListener listener)
+    {
+        if (mListeners == null)
+        {
             return;
         }
         mListeners.remove(listener);
-        if (mListeners.size() == 0) {
+        if (mListeners.size() == 0)
+        {
             mListeners = null;
         }
     }
@@ -170,7 +178,8 @@ public abstract class Animator implements Cloneable {
      *
      * @return ArrayList<AnimatorListener> The set of listeners.
      */
-    public ArrayList<AnimatorListener> getListeners() {
+    public ArrayList<AnimatorListener> getListeners()
+    {
         return mListeners;
     }
 
@@ -179,28 +188,36 @@ public abstract class Animator implements Cloneable {
      * <code>getListeners()</code> followed by calling <code>clear()</code> on the
      * returned list of listeners.
      */
-    public void removeAllListeners() {
-        if (mListeners != null) {
+    public void removeAllListeners()
+    {
+        if (mListeners != null)
+        {
             mListeners.clear();
             mListeners = null;
         }
     }
 
     @Override
-    public Animator clone() {
-        try {
+    public Animator clone()
+    {
+        try
+        {
             final Animator anim = (Animator) super.clone();
-            if (mListeners != null) {
+            if (mListeners != null)
+            {
                 ArrayList<AnimatorListener> oldListeners = mListeners;
                 anim.mListeners = new ArrayList<AnimatorListener>();
                 int numListeners = oldListeners.size();
-                for (int i = 0; i < numListeners; ++i) {
+                for (int i = 0; i < numListeners; ++i)
+                {
                     anim.mListeners.add(oldListeners.get(i));
                 }
             }
             return anim;
-        } catch (CloneNotSupportedException e) {
-           throw new AssertionError();
+        }
+        catch (CloneNotSupportedException e)
+        {
+            throw new AssertionError();
         }
     }
 
@@ -213,7 +230,8 @@ public abstract class Animator implements Cloneable {
      * An ValueAnimator object will ignore the request since it does not have enough
      * information (such as a target object) to gather these values.
      */
-    public void setupStartValues() {
+    public void setupStartValues()
+    {
     }
 
     /**
@@ -225,7 +243,8 @@ public abstract class Animator implements Cloneable {
      * An ValueAnimator object will ignore the request since it does not have enough
      * information (such as a target object) to gather these values.
      */
-    public void setupEndValues() {
+    public void setupEndValues()
+    {
     }
 
     /**
@@ -236,7 +255,8 @@ public abstract class Animator implements Cloneable {
      *
      * @param target The object being animated
      */
-    public void setTarget(Object target) {
+    public void setTarget(Object target)
+    {
     }
 
     /**
@@ -244,7 +264,8 @@ public abstract class Animator implements Cloneable {
      * Notifications indicate animation related events, such as the end or the
      * repetition of the animation.</p>
      */
-    public static interface AnimatorListener {
+    public static interface AnimatorListener
+    {
         /**
          * <p>Notifies the start of the animation.</p>
          *

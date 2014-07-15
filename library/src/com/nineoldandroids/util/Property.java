@@ -25,42 +25,45 @@ package com.nineoldandroids.util;
  * @param <T> The class on which the property is declared.
  * @param <V> The type that this property represents.
  */
-public abstract class Property<T, V> {
+public abstract class Property<T, V>
+{
 
     private final String mName;
     private final Class<V> mType;
 
     /**
+     * A constructor that takes an identifying name and {@link #getType() type} for the property.
+     */
+    public Property(Class<V> type, String name)
+    {
+        mName = name;
+        mType = type;
+    }
+
+    /**
      * This factory method creates and returns a Property given the <code>class</code> and
      * <code>name</code> parameters, where the <code>"name"</code> parameter represents either:
      * <ul>
-     *     <li>a public <code>getName()</code> method on the class which takes no arguments, plus an
-     *     optional public <code>setName()</code> method which takes a value of the same type
-     *     returned by <code>getName()</code>
-     *     <li>a public <code>isName()</code> method on the class which takes no arguments, plus an
-     *     optional public <code>setName()</code> method which takes a value of the same type
-     *     returned by <code>isName()</code>
-     *     <li>a public <code>name</code> field on the class
+     * <li>a public <code>getName()</code> method on the class which takes no arguments, plus an
+     * optional public <code>setName()</code> method which takes a value of the same type
+     * returned by <code>getName()</code>
+     * <li>a public <code>isName()</code> method on the class which takes no arguments, plus an
+     * optional public <code>setName()</code> method which takes a value of the same type
+     * returned by <code>isName()</code>
+     * <li>a public <code>name</code> field on the class
      * </ul>
-     *
+     * <p/>
      * <p>If either of the get/is method alternatives is found on the class, but an appropriate
      * <code>setName()</code> method is not found, the <code>Property</code> will be
      * {@link #isReadOnly() readOnly}. Calling the {@link #set(Object, Object)} method on such
      * a property is allowed, but will have no effect.</p>
-     *
+     * <p/>
      * <p>If neither the methods nor the field are found on the class a
      * {@link NoSuchPropertyException} exception will be thrown.</p>
      */
-    public static <T, V> Property<T, V> of(Class<T> hostType, Class<V> valueType, String name) {
+    public static <T, V> Property<T, V> of(Class<T> hostType, Class<V> valueType, String name)
+    {
         return new ReflectiveProperty<T, V>(hostType, valueType, name);
-    }
-
-    /**
-     * A constructor that takes an identifying name and {@link #getType() type} for the property.
-     */
-    public Property(Class<V> type, String name) {
-        mName = name;
-        mType = type;
     }
 
     /**
@@ -72,7 +75,8 @@ public abstract class Property<T, V> {
      * only a <code>getFoo()</code> or <code>isFoo()</code> method, but no matching
      * <code>setFoo()</code> method.
      */
-    public boolean isReadOnly() {
+    public boolean isReadOnly()
+    {
         return false;
     }
 
@@ -81,8 +85,9 @@ public abstract class Property<T, V> {
      * to set the value on the target object it will throw an {@link UnsupportedOperationException}
      * exception.
      */
-    public void set(T object, V value) {
-        throw new UnsupportedOperationException("Property " + getName() +" is read-only");
+    public void set(T object, V value)
+    {
+        throw new UnsupportedOperationException("Property " + getName() + " is read-only");
     }
 
     /**
@@ -93,14 +98,16 @@ public abstract class Property<T, V> {
     /**
      * Returns the name for this property.
      */
-    public String getName() {
+    public String getName()
+    {
         return mName;
     }
 
     /**
      * Returns the type for this property.
      */
-    public Class<V> getType() {
+    public Class<V> getType()
+    {
         return mType;
     }
 }

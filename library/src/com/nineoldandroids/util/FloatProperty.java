@@ -23,12 +23,13 @@ package com.nineoldandroids.util;
  * <code>Float</code> class.
  *
  * @param <T> The class on which the Property is declared.
- *
  * @hide
  */
-public abstract class FloatProperty<T> extends Property<T, Float> {
+public abstract class FloatProperty<T> extends Property<T, Float>
+{
 
-    public FloatProperty(String name) {
+    public FloatProperty(String name)
+    {
         super(Float.class, name);
     }
 
@@ -39,7 +40,8 @@ public abstract class FloatProperty<T> extends Property<T, Float> {
     public abstract void setValue(T object, float value);
 
     @Override
-    final public void set(T object, Float value) {
+    final public void set(T object, Float value)
+    {
         setValue(object, value);
     }
 
