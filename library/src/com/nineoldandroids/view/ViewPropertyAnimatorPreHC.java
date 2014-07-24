@@ -137,6 +137,8 @@ class ViewPropertyAnimatorPreHC extends ViewPropertyAnimator
     private HashMap<Animator, PropertyBundle> mAnimatorMap =
             new HashMap<Animator, PropertyBundle>();
 
+    private Runnable mStartAction, mEndAction;
+
     /**
      * Constructor, called by View. This is private by design, as the user should only
      * get a ViewPropertyAnimator by calling View.animate().
@@ -399,6 +401,20 @@ class ViewPropertyAnimatorPreHC extends ViewPropertyAnimator
     public ViewPropertyAnimator alphaBy(float value)
     {
         animatePropertyBy(ALPHA, value);
+        return this;
+    }
+
+    @Override
+    public ViewPropertyAnimator withStartAction(Runnable startRunnable)
+    {
+        mStartAction = startRunnable;
+        return this;
+    }
+
+    @Override
+    public ViewPropertyAnimator withEndAction(Runnable endRunnable)
+    {
+        mEndAction = endRunnable;
         return this;
     }
 
@@ -682,6 +698,11 @@ class ViewPropertyAnimatorPreHC extends ViewPropertyAnimator
             {
                 mListener.onAnimationStart(animation);
             }
+
+            if (mStartAction != null)
+            {
+                mStartAction.run();
+            }
         }
 
         @Override
@@ -692,12 +713,18 @@ class ViewPropertyAnimatorPreHC extends ViewPropertyAnimator
                 mListener.onAnimationEnd(animation);
             }
             mAnimatorMap.remove(animation);
+
             // If the map is empty, it means all animation are done or canceled, so the listener
             // isn't needed anymore. Not nulling it would cause it to leak any objects used in
             // its implementation
             if (mAnimatorMap.isEmpty())
             {
                 mListener = null;
+
+                if (mEndAction != null)
+                {
+                    mEndAction.run();
+                }
             }
         }
 

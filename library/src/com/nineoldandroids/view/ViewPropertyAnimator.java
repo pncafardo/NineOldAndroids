@@ -352,4 +352,18 @@ public abstract class ViewPropertyAnimator
      * @see View#setAlpha(float)
      */
     public abstract ViewPropertyAnimator alphaBy(float value);
+
+    /**
+     * Clean way to execute work when the animation starts without using a listener.
+     * @param startRunnable
+     * @return This object, allowing calls to methods in this class to be chained.
+     */
+    public abstract ViewPropertyAnimator withStartAction(Runnable startRunnable);
+
+    /**
+     * Clean way to execute work when the animation ends without using a listener.
+     * @param endRunnable
+     * @return This object, allowing calls to methods in this class to be chained.
+     */
+    public abstract ViewPropertyAnimator withEndAction(Runnable endRunnable);
 }

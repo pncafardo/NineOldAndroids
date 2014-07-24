@@ -133,6 +133,8 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
     private HashMap<Animator, PropertyBundle> mAnimatorMap =
             new HashMap<Animator, PropertyBundle>();
 
+    private Runnable mStartAction, mEndAction;
+
     /**
      * Constructor, called by View. This is private by design, as the user should only
      * get a ViewPropertyAnimator by calling View.animate().
@@ -394,6 +396,20 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
     public ViewPropertyAnimator alphaBy(float value)
     {
         animatePropertyBy(ALPHA, value);
+        return this;
+    }
+
+    @Override
+    public ViewPropertyAnimator withStartAction(Runnable startRunnable)
+    {
+        mStartAction = startRunnable;
+        return this;
+    }
+
+    @Override
+    public ViewPropertyAnimator withEndAction(Runnable endRunnable)
+    {
+        mEndAction = endRunnable;
         return this;
     }
 
@@ -685,6 +701,11 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
             {
                 mListener.onAnimationStart(animation);
             }
+
+            if (mStartAction != null)
+            {
+                mStartAction.run();
+            }
         }
 
         @Override
@@ -701,6 +722,12 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
             if (mAnimatorMap.isEmpty())
             {
                 mListener = null;
+
+                //pc Wait until all animations are done to start the endAction
+                if (mEndAction != null)
+                {
+                    mEndAction.run();
+                }
             }
         }
 

@@ -14,6 +14,8 @@ class ViewPropertyAnimatorICS extends ViewPropertyAnimator
      */
     private final static long RETURN_WHEN_NULL = -1L;
 
+    private Runnable mStartAction, mEndAction;
+
     /**
      * A WeakReference holding the native implementation of ViewPropertyAnimator
      */
@@ -97,6 +99,7 @@ class ViewPropertyAnimatorICS extends ViewPropertyAnimator
                     public void onAnimationStart(android.animation.Animator animation)
                     {
                         listener.onAnimationStart(null);
+                        mStartAction.run();
                     }
 
                     @Override
@@ -109,6 +112,7 @@ class ViewPropertyAnimatorICS extends ViewPropertyAnimator
                     public void onAnimationEnd(android.animation.Animator animation)
                     {
                         listener.onAnimationEnd(null);
+                        mEndAction.run();
                     }
 
                     @Override
@@ -359,6 +363,20 @@ class ViewPropertyAnimatorICS extends ViewPropertyAnimator
         {
             n.alphaBy(value);
         }
+        return this;
+    }
+
+    @Override
+    public ViewPropertyAnimator withStartAction(Runnable startRunnable)
+    {
+        mStartAction = startRunnable;
+        return this;
+    }
+
+    @Override
+    public ViewPropertyAnimator withEndAction(Runnable endRunnable)
+    {
+        mEndAction = endRunnable;
         return this;
     }
 }
