@@ -558,36 +558,6 @@ public class ValueAnimator extends Animator
     }
 
     /**
-     * Gets the length of the animation. The default duration is 300 milliseconds.
-     *
-     * @return The length of the animation, in milliseconds.
-     */
-    public long getDuration()
-    {
-        return mDuration;
-    }
-
-    /**
-     * Sets the length of the animation. The default duration is 300 milliseconds.
-     *
-     * @param duration The length of the animation, in milliseconds. This value cannot
-     *                 be negative.
-     * @return ValueAnimator The object called with setDuration(). This return
-     * value makes it easier to compose statements together that construct and then set the
-     * duration, as in <code>ValueAnimator.ofInt(0, 10).setDuration(500).start()</code>.
-     */
-    public ValueAnimator setDuration(long duration)
-    {
-        if (duration < 0)
-        {
-            throw new IllegalArgumentException("Animators cannot have negative duration: " +
-                                                       duration);
-        }
-        mDuration = duration;
-        return this;
-    }
-
-    /**
      * Gets the current position of the animation in time, which is equal to the current
      * time minus the time that the animation started. An animation that is not yet started will
      * return a value of zero.
@@ -624,28 +594,6 @@ public class ValueAnimator extends Animator
         }
         mStartTime = currentTime - playTime;
         animationFrame(currentTime);
-    }
-
-    /**
-     * The amount of time, in milliseconds, to delay starting the animation after
-     * {@link #start()} is called.
-     *
-     * @return the number of milliseconds to delay running the animation
-     */
-    public long getStartDelay()
-    {
-        return mStartDelay;
-    }
-
-    /**
-     * The amount of time, in milliseconds, to delay starting the animation after
-     * {@link #start()} is called.
-     *
-     * @param startDelay The amount of the delay, in milliseconds
-     */
-    public void setStartDelay(long startDelay)
-    {
-        this.mStartDelay = startDelay;
     }
 
     /**
@@ -820,6 +768,54 @@ public class ValueAnimator extends Animator
         }
     }
 
+    @Override
+    public boolean isRunning()
+    {
+        return (mPlayingState == RUNNING || mRunning);
+    }
+
+    @Override
+    public boolean isStarted()
+    {
+        return mStarted;
+    }
+
+    @Override
+    public ValueAnimator clone()
+    {
+        final ValueAnimator anim = (ValueAnimator) super.clone();
+        if (mUpdateListeners != null)
+        {
+            ArrayList<AnimatorUpdateListener> oldListeners = mUpdateListeners;
+            anim.mUpdateListeners = new ArrayList<AnimatorUpdateListener>();
+            int numListeners = oldListeners.size();
+            for (int i = 0; i < numListeners; ++i)
+            {
+                anim.mUpdateListeners.add(oldListeners.get(i));
+            }
+        }
+        anim.mSeekTime = -1;
+        anim.mPlayingBackwards = false;
+        anim.mCurrentIteration = 0;
+        anim.mInitialized = false;
+        anim.mPlayingState = STOPPED;
+        anim.mStartedDelay = false;
+        PropertyValuesHolder[] oldValues = mValues;
+        if (oldValues != null)
+        {
+            int numValues = oldValues.length;
+            anim.mValues = new PropertyValuesHolder[numValues];
+            anim.mValuesMap = new HashMap<String, PropertyValuesHolder>(numValues);
+            for (int i = 0; i < numValues; ++i)
+            {
+                PropertyValuesHolder newValuesHolder = oldValues[i].clone();
+                anim.mValues[i] = newValuesHolder;
+                anim.mValuesMap.put(newValuesHolder.getPropertyName(), newValuesHolder);
+            }
+        }
+        return anim;
+    }
+
     /**
      * The type evaluator to be used when calculating the animated values of this animation.
      * The system will automatically assign a float or int evaluator based on the type
@@ -950,16 +946,56 @@ public class ValueAnimator extends Animator
         endAnimation();
     }
 
-    @Override
-    public boolean isRunning()
+    /**
+     * The amount of time, in milliseconds, to delay starting the animation after
+     * {@link #start()} is called.
+     *
+     * @return the number of milliseconds to delay running the animation
+     */
+    public long getStartDelay()
     {
-        return (mPlayingState == RUNNING || mRunning);
+        return mStartDelay;
     }
 
-    @Override
-    public boolean isStarted()
+    /**
+     * The amount of time, in milliseconds, to delay starting the animation after
+     * {@link #start()} is called.
+     *
+     * @param startDelay The amount of the delay, in milliseconds
+     */
+    public void setStartDelay(long startDelay)
     {
-        return mStarted;
+        this.mStartDelay = startDelay;
+    }
+
+    /**
+     * Gets the length of the animation. The default duration is 300 milliseconds.
+     *
+     * @return The length of the animation, in milliseconds.
+     */
+    public long getDuration()
+    {
+        return mDuration;
+    }
+
+    /**
+     * Sets the length of the animation. The default duration is 300 milliseconds.
+     *
+     * @param duration The length of the animation, in milliseconds. This value cannot
+     *                 be negative.
+     * @return ValueAnimator The object called with setDuration(). This return
+     * value makes it easier to compose statements together that construct and then set the
+     * duration, as in <code>ValueAnimator.ofInt(0, 10).setDuration(500).start()</code>.
+     */
+    public ValueAnimator setDuration(long duration)
+    {
+        if (duration < 0)
+        {
+            throw new IllegalArgumentException("Animators cannot have negative duration: " +
+                                                       duration);
+        }
+        mDuration = duration;
+        return this;
     }
 
     /**
@@ -1176,42 +1212,6 @@ public class ValueAnimator extends Animator
                 mUpdateListeners.get(i).onAnimationUpdate(this);
             }
         }
-    }
-
-    @Override
-    public ValueAnimator clone()
-    {
-        final ValueAnimator anim = (ValueAnimator) super.clone();
-        if (mUpdateListeners != null)
-        {
-            ArrayList<AnimatorUpdateListener> oldListeners = mUpdateListeners;
-            anim.mUpdateListeners = new ArrayList<AnimatorUpdateListener>();
-            int numListeners = oldListeners.size();
-            for (int i = 0; i < numListeners; ++i)
-            {
-                anim.mUpdateListeners.add(oldListeners.get(i));
-            }
-        }
-        anim.mSeekTime = -1;
-        anim.mPlayingBackwards = false;
-        anim.mCurrentIteration = 0;
-        anim.mInitialized = false;
-        anim.mPlayingState = STOPPED;
-        anim.mStartedDelay = false;
-        PropertyValuesHolder[] oldValues = mValues;
-        if (oldValues != null)
-        {
-            int numValues = oldValues.length;
-            anim.mValues = new PropertyValuesHolder[numValues];
-            anim.mValuesMap = new HashMap<String, PropertyValuesHolder>(numValues);
-            for (int i = 0; i < numValues; ++i)
-            {
-                PropertyValuesHolder newValuesHolder = oldValues[i].clone();
-                anim.mValues[i] = newValuesHolder;
-                anim.mValuesMap.put(newValuesHolder.getPropertyName(), newValuesHolder);
-            }
-        }
-        return anim;
     }
 
     @Override

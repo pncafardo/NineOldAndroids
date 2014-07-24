@@ -407,24 +407,6 @@ public final class ObjectAnimator extends ValueAnimator
         }
     }
 
-    @Override
-    public void start()
-    {
-        if (DBG)
-        {
-            Log.d("ObjectAnimator", "Anim target, duration: " + mTarget + ", " + getDuration());
-            for (int i = 0; i < mValues.length; ++i)
-            {
-                PropertyValuesHolder pvh = mValues[i];
-                ArrayList<Keyframe> keyframes = pvh.mKeyframeSet.mKeyframes;
-                Log.d("ObjectAnimator", "   Values[" + i + "]: " +
-                        pvh.getPropertyName() + ", " + keyframes.get(0).getValue() + ", " +
-                        keyframes.get(pvh.mKeyframeSet.mNumKeyframes - 1).getValue());
-            }
-        }
-        super.start();
-    }
-
     /**
      * This function is called immediately before processing the first animation
      * frame of an animation. If there is a nonzero <code>startDelay</code>, the
@@ -474,6 +456,68 @@ public final class ObjectAnimator extends ValueAnimator
         return this;
     }
 
+    @Override
+    public void start()
+    {
+        if (DBG)
+        {
+            Log.d("ObjectAnimator", "Anim target, duration: " + mTarget + ", " + getDuration());
+            for (int i = 0; i < mValues.length; ++i)
+            {
+                PropertyValuesHolder pvh = mValues[i];
+                ArrayList<Keyframe> keyframes = pvh.mKeyframeSet.mKeyframes;
+                Log.d("ObjectAnimator", "   Values[" + i + "]: " +
+                        pvh.getPropertyName() + ", " + keyframes.get(0).getValue() + ", " +
+                        keyframes.get(pvh.mKeyframeSet.mNumKeyframes - 1).getValue());
+            }
+        }
+        super.start();
+    }
+
+    /**
+     * This method is called with the elapsed fraction of the animation during every
+     * animation frame. This function turns the elapsed fraction into an interpolated fraction
+     * and then into an animated value (from the evaluator. The function is called mostly during
+     * animation updates, but it is also called when the <code>end()</code>
+     * function is called, to set the final value on the property.
+     * <p/>
+     * <p>Overrides of this method must call the superclass to perform the calculation
+     * of the animated value.</p>
+     *
+     * @param fraction The elapsed fraction of the animation.
+     */
+    @Override
+    void animateValue(float fraction)
+    {
+        super.animateValue(fraction);
+        int numValues = mValues.length;
+        for (int i = 0; i < numValues; ++i)
+        {
+            mValues[i].setAnimatedValue(mTarget);
+        }
+    }
+
+    @Override
+    public ObjectAnimator clone()
+    {
+        final ObjectAnimator anim = (ObjectAnimator) super.clone();
+        return anim;
+    }
+
+    @Override
+    public String toString()
+    {
+        String returnVal = "ObjectAnimator@" + Integer.toHexString(hashCode()) + ", target " +
+                mTarget;
+        if (mValues != null)
+        {
+            for (int i = 0; i < mValues.length; ++i)
+            {
+                returnVal += "\n    " + mValues[i].toString();
+            }
+        }
+        return returnVal;
+    }
 
     /**
      * The target object whose property will be animated by this animation
@@ -526,50 +570,5 @@ public final class ObjectAnimator extends ValueAnimator
         {
             mValues[i].setupEndValue(mTarget);
         }
-    }
-
-    /**
-     * This method is called with the elapsed fraction of the animation during every
-     * animation frame. This function turns the elapsed fraction into an interpolated fraction
-     * and then into an animated value (from the evaluator. The function is called mostly during
-     * animation updates, but it is also called when the <code>end()</code>
-     * function is called, to set the final value on the property.
-     * <p/>
-     * <p>Overrides of this method must call the superclass to perform the calculation
-     * of the animated value.</p>
-     *
-     * @param fraction The elapsed fraction of the animation.
-     */
-    @Override
-    void animateValue(float fraction)
-    {
-        super.animateValue(fraction);
-        int numValues = mValues.length;
-        for (int i = 0; i < numValues; ++i)
-        {
-            mValues[i].setAnimatedValue(mTarget);
-        }
-    }
-
-    @Override
-    public ObjectAnimator clone()
-    {
-        final ObjectAnimator anim = (ObjectAnimator) super.clone();
-        return anim;
-    }
-
-    @Override
-    public String toString()
-    {
-        String returnVal = "ObjectAnimator@" + Integer.toHexString(hashCode()) + ", target " +
-                mTarget;
-        if (mValues != null)
-        {
-            for (int i = 0; i < mValues.length; ++i)
-            {
-                returnVal += "\n    " + mValues[i].toString();
-            }
-        }
-        return returnVal;
     }
 }

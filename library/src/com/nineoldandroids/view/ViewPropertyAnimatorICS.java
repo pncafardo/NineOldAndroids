@@ -1,7 +1,5 @@
 package com.nineoldandroids.view;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.view.View;
 import android.view.animation.Interpolator;
 import com.nineoldandroids.animation.Animator.AnimatorListener;
@@ -27,17 +25,6 @@ class ViewPropertyAnimatorICS extends ViewPropertyAnimator
     }
 
     @Override
-    public ViewPropertyAnimator setDuration(long duration)
-    {
-        android.view.ViewPropertyAnimator n = mNative.get();
-        if (n != null)
-        {
-            n.setDuration(duration);
-        }
-        return this;
-    }
-
-    @Override
     public long getDuration()
     {
         android.view.ViewPropertyAnimator n = mNative.get();
@@ -49,12 +36,12 @@ class ViewPropertyAnimatorICS extends ViewPropertyAnimator
     }
 
     @Override
-    public ViewPropertyAnimator setStartDelay(long startDelay)
+    public ViewPropertyAnimator setDuration(long duration)
     {
         android.view.ViewPropertyAnimator n = mNative.get();
         if (n != null)
         {
-            n.setStartDelay(startDelay);
+            n.setDuration(duration);
         }
         return this;
     }
@@ -68,6 +55,17 @@ class ViewPropertyAnimatorICS extends ViewPropertyAnimator
             return n.getStartDelay();
         }
         return RETURN_WHEN_NULL;
+    }
+
+    @Override
+    public ViewPropertyAnimator setStartDelay(long startDelay)
+    {
+        android.view.ViewPropertyAnimator n = mNative.get();
+        if (n != null)
+        {
+            n.setStartDelay(startDelay);
+        }
+        return this;
     }
 
     @Override

@@ -44,12 +44,6 @@ class FloatKeyframeSet extends KeyframeSet
     }
 
     @Override
-    public Object getValue(float fraction)
-    {
-        return getFloatValue(fraction);
-    }
-
-    @Override
     public FloatKeyframeSet clone()
     {
         ArrayList<Keyframe> keyframes = mKeyframes;
@@ -61,6 +55,12 @@ class FloatKeyframeSet extends KeyframeSet
         }
         FloatKeyframeSet newSet = new FloatKeyframeSet(newKeyframes);
         return newSet;
+    }
+
+    @Override
+    public Object getValue(float fraction)
+    {
+        return getFloatValue(fraction);
     }
 
     public float getFloatValue(float fraction)

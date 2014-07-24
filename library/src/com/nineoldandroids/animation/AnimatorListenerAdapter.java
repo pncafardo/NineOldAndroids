@@ -28,7 +28,7 @@ public abstract class AnimatorListenerAdapter implements Animator.AnimatorListen
      * {@inheritDoc}
      */
     @Override
-    public void onAnimationCancel(Animator animation)
+    public void onAnimationStart(Animator animation)
     {
     }
 
@@ -44,7 +44,7 @@ public abstract class AnimatorListenerAdapter implements Animator.AnimatorListen
      * {@inheritDoc}
      */
     @Override
-    public void onAnimationRepeat(Animator animation)
+    public void onAnimationCancel(Animator animation)
     {
     }
 
@@ -52,7 +52,7 @@ public abstract class AnimatorListenerAdapter implements Animator.AnimatorListen
      * {@inheritDoc}
      */
     @Override
-    public void onAnimationStart(Animator animation)
+    public void onAnimationRepeat(Animator animation)
     {
     }
 

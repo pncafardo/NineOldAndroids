@@ -222,45 +222,6 @@ public final class AnimatorSet extends Animator
     }
 
     /**
-     * Sets the target object for all current {@link #getChildAnimations() child animations}
-     * of this AnimatorSet that take targets ({@link ObjectAnimator} and
-     * AnimatorSet).
-     *
-     * @param target The object being animated
-     */
-    @Override
-    public void setTarget(Object target)
-    {
-        for (Node node : mNodes)
-        {
-            Animator animation = node.animation;
-            if (animation instanceof AnimatorSet)
-            {
-                ((AnimatorSet) animation).setTarget(target);
-            }
-            else if (animation instanceof ObjectAnimator)
-            {
-                ((ObjectAnimator) animation).setTarget(target);
-            }
-        }
-    }
-
-    /**
-     * Sets the TimeInterpolator for all current {@link #getChildAnimations() child animations}
-     * of this AnimatorSet.
-     *
-     * @param interpolator the interpolator to be used by each child animation of this AnimatorSet
-     */
-    @Override
-    public void setInterpolator(/*Time*/Interpolator interpolator)
-    {
-        for (Node node : mNodes)
-        {
-            node.animation.setInterpolator(interpolator);
-        }
-    }
-
-    /**
      * This method creates a <code>Builder</code> object, which is used to
      * set up playing constraints. This initial <code>play()</code> method
      * tells the <code>Builder</code> the animation that is the dependency for
@@ -296,207 +257,6 @@ public final class AnimatorSet extends Animator
             return new Builder(anim);
         }
         return null;
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * <p>Note that canceling a <code>AnimatorSet</code> also cancels all of the animations that it
-     * is responsible for.</p>
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public void cancel()
-    {
-        mTerminated = true;
-        if (isStarted())
-        {
-            ArrayList<AnimatorListener> tmpListeners = null;
-            if (mListeners != null)
-            {
-                tmpListeners = (ArrayList<AnimatorListener>) mListeners.clone();
-                for (AnimatorListener listener : tmpListeners)
-                {
-                    listener.onAnimationCancel(this);
-                }
-            }
-            if (mDelayAnim != null && mDelayAnim.isRunning())
-            {
-                // If we're currently in the startDelay period, just cancel that animator and
-                // send out the end event to all listeners
-                mDelayAnim.cancel();
-            }
-            else if (mSortedNodes.size() > 0)
-            {
-                for (Node node : mSortedNodes)
-                {
-                    node.animation.cancel();
-                }
-            }
-            if (tmpListeners != null)
-            {
-                for (AnimatorListener listener : tmpListeners)
-                {
-                    listener.onAnimationEnd(this);
-                }
-            }
-            mStarted = false;
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * <p>Note that ending a <code>AnimatorSet</code> also ends all of the animations that it is
-     * responsible for.</p>
-     */
-    @Override
-    public void end()
-    {
-        mTerminated = true;
-        if (isStarted())
-        {
-            if (mSortedNodes.size() != mNodes.size())
-            {
-                // hasn't been started yet - sort the nodes now, then end them
-                sortNodes();
-                for (Node node : mSortedNodes)
-                {
-                    if (mSetListener == null)
-                    {
-                        mSetListener = new AnimatorSetListener(this);
-                    }
-                    node.animation.addListener(mSetListener);
-                }
-            }
-            if (mDelayAnim != null)
-            {
-                mDelayAnim.cancel();
-            }
-            if (mSortedNodes.size() > 0)
-            {
-                for (Node node : mSortedNodes)
-                {
-                    node.animation.end();
-                }
-            }
-            if (mListeners != null)
-            {
-                ArrayList<AnimatorListener> tmpListeners =
-                        (ArrayList<AnimatorListener>) mListeners.clone();
-                for (AnimatorListener listener : tmpListeners)
-                {
-                    listener.onAnimationEnd(this);
-                }
-            }
-            mStarted = false;
-        }
-    }
-
-    /**
-     * Returns true if any of the child animations of this AnimatorSet have been started and have
-     * not yet ended.
-     *
-     * @return Whether this AnimatorSet has been started and has not yet ended.
-     */
-    @Override
-    public boolean isRunning()
-    {
-        for (Node node : mNodes)
-        {
-            if (node.animation.isRunning())
-            {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public boolean isStarted()
-    {
-        return mStarted;
-    }
-
-    /**
-     * The amount of time, in milliseconds, to delay starting the animation after
-     * {@link #start()} is called.
-     *
-     * @return the number of milliseconds to delay running the animation
-     */
-    @Override
-    public long getStartDelay()
-    {
-        return mStartDelay;
-    }
-
-    /**
-     * The amount of time, in milliseconds, to delay starting the animation after
-     * {@link #start()} is called.
-     *
-     * @param startDelay The amount of the delay, in milliseconds
-     */
-    @Override
-    public void setStartDelay(long startDelay)
-    {
-        mStartDelay = startDelay;
-    }
-
-    /**
-     * Gets the length of each of the child animations of this AnimatorSet. This value may
-     * be less than 0, which indicates that no duration has been set on this AnimatorSet
-     * and each of the child animations will use their own duration.
-     *
-     * @return The length of the animation, in milliseconds, of each of the child
-     * animations of this AnimatorSet.
-     */
-    @Override
-    public long getDuration()
-    {
-        return mDuration;
-    }
-
-    /**
-     * Sets the length of each of the current child animations of this AnimatorSet. By default,
-     * each child animation will use its own duration. If the duration is set on the AnimatorSet,
-     * then each child animation inherits this duration.
-     *
-     * @param duration The length of the animation, in milliseconds, of each of the child
-     *                 animations of this AnimatorSet.
-     */
-    @Override
-    public AnimatorSet setDuration(long duration)
-    {
-        if (duration < 0)
-        {
-            throw new IllegalArgumentException("duration must be a value of zero or greater");
-        }
-        for (Node node : mNodes)
-        {
-            // TODO: don't set the duration of the timing-only nodes created by AnimatorSet to
-            // insert "play-after" delays
-            node.animation.setDuration(duration);
-        }
-        mDuration = duration;
-        return this;
-    }
-
-    @Override
-    public void setupStartValues()
-    {
-        for (Node node : mNodes)
-        {
-            node.animation.setupStartValues();
-        }
-    }
-
-    @Override
-    public void setupEndValues()
-    {
-        for (Node node : mNodes)
-        {
-            node.animation.setupEndValues();
-        }
     }
 
     /**
@@ -634,6 +394,204 @@ public final class AnimatorSet extends Animator
         }
     }
 
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * <p>Note that canceling a <code>AnimatorSet</code> also cancels all of the animations that it
+     * is responsible for.</p>
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public void cancel()
+    {
+        mTerminated = true;
+        if (isStarted())
+        {
+            ArrayList<AnimatorListener> tmpListeners = null;
+            if (mListeners != null)
+            {
+                tmpListeners = (ArrayList<AnimatorListener>) mListeners.clone();
+                for (AnimatorListener listener : tmpListeners)
+                {
+                    listener.onAnimationCancel(this);
+                }
+            }
+            if (mDelayAnim != null && mDelayAnim.isRunning())
+            {
+                // If we're currently in the startDelay period, just cancel that animator and
+                // send out the end event to all listeners
+                mDelayAnim.cancel();
+            }
+            else if (mSortedNodes.size() > 0)
+            {
+                for (Node node : mSortedNodes)
+                {
+                    node.animation.cancel();
+                }
+            }
+            if (tmpListeners != null)
+            {
+                for (AnimatorListener listener : tmpListeners)
+                {
+                    listener.onAnimationEnd(this);
+                }
+            }
+            mStarted = false;
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     * <p/>
+     * <p>Note that ending a <code>AnimatorSet</code> also ends all of the animations that it is
+     * responsible for.</p>
+     */
+    @Override
+    public void end()
+    {
+        mTerminated = true;
+        if (isStarted())
+        {
+            if (mSortedNodes.size() != mNodes.size())
+            {
+                // hasn't been started yet - sort the nodes now, then end them
+                sortNodes();
+                for (Node node : mSortedNodes)
+                {
+                    if (mSetListener == null)
+                    {
+                        mSetListener = new AnimatorSetListener(this);
+                    }
+                    node.animation.addListener(mSetListener);
+                }
+            }
+            if (mDelayAnim != null)
+            {
+                mDelayAnim.cancel();
+            }
+            if (mSortedNodes.size() > 0)
+            {
+                for (Node node : mSortedNodes)
+                {
+                    node.animation.end();
+                }
+            }
+            if (mListeners != null)
+            {
+                ArrayList<AnimatorListener> tmpListeners =
+                        (ArrayList<AnimatorListener>) mListeners.clone();
+                for (AnimatorListener listener : tmpListeners)
+                {
+                    listener.onAnimationEnd(this);
+                }
+            }
+            mStarted = false;
+        }
+    }
+
+    /**
+     * The amount of time, in milliseconds, to delay starting the animation after
+     * {@link #start()} is called.
+     *
+     * @return the number of milliseconds to delay running the animation
+     */
+    @Override
+    public long getStartDelay()
+    {
+        return mStartDelay;
+    }
+
+    /**
+     * The amount of time, in milliseconds, to delay starting the animation after
+     * {@link #start()} is called.
+     *
+     * @param startDelay The amount of the delay, in milliseconds
+     */
+    @Override
+    public void setStartDelay(long startDelay)
+    {
+        mStartDelay = startDelay;
+    }
+
+    /**
+     * Gets the length of each of the child animations of this AnimatorSet. This value may
+     * be less than 0, which indicates that no duration has been set on this AnimatorSet
+     * and each of the child animations will use their own duration.
+     *
+     * @return The length of the animation, in milliseconds, of each of the child
+     * animations of this AnimatorSet.
+     */
+    @Override
+    public long getDuration()
+    {
+        return mDuration;
+    }
+
+    /**
+     * Sets the length of each of the current child animations of this AnimatorSet. By default,
+     * each child animation will use its own duration. If the duration is set on the AnimatorSet,
+     * then each child animation inherits this duration.
+     *
+     * @param duration The length of the animation, in milliseconds, of each of the child
+     *                 animations of this AnimatorSet.
+     */
+    @Override
+    public AnimatorSet setDuration(long duration)
+    {
+        if (duration < 0)
+        {
+            throw new IllegalArgumentException("duration must be a value of zero or greater");
+        }
+        for (Node node : mNodes)
+        {
+            // TODO: don't set the duration of the timing-only nodes created by AnimatorSet to
+            // insert "play-after" delays
+            node.animation.setDuration(duration);
+        }
+        mDuration = duration;
+        return this;
+    }
+
+    /**
+     * Sets the TimeInterpolator for all current {@link #getChildAnimations() child animations}
+     * of this AnimatorSet.
+     *
+     * @param interpolator the interpolator to be used by each child animation of this AnimatorSet
+     */
+    @Override
+    public void setInterpolator(/*Time*/Interpolator interpolator)
+    {
+        for (Node node : mNodes)
+        {
+            node.animation.setInterpolator(interpolator);
+        }
+    }
+
+    /**
+     * Returns true if any of the child animations of this AnimatorSet have been started and have
+     * not yet ended.
+     *
+     * @return Whether this AnimatorSet has been started and has not yet ended.
+     */
+    @Override
+    public boolean isRunning()
+    {
+        for (Node node : mNodes)
+        {
+            if (node.animation.isRunning())
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isStarted()
+    {
+        return mStarted;
+    }
+
     @Override
     public AnimatorSet clone()
     {
@@ -713,6 +671,48 @@ public final class AnimatorSet extends Animator
         }
 
         return anim;
+    }
+
+    @Override
+    public void setupStartValues()
+    {
+        for (Node node : mNodes)
+        {
+            node.animation.setupStartValues();
+        }
+    }
+
+    @Override
+    public void setupEndValues()
+    {
+        for (Node node : mNodes)
+        {
+            node.animation.setupEndValues();
+        }
+    }
+
+    /**
+     * Sets the target object for all current {@link #getChildAnimations() child animations}
+     * of this AnimatorSet that take targets ({@link ObjectAnimator} and
+     * AnimatorSet).
+     *
+     * @param target The object being animated
+     */
+    @Override
+    public void setTarget(Object target)
+    {
+        for (Node node : mNodes)
+        {
+            Animator animation = node.animation;
+            if (animation instanceof AnimatorSet)
+            {
+                ((AnimatorSet) animation).setTarget(target);
+            }
+            else if (animation instanceof ObjectAnimator)
+            {
+                ((ObjectAnimator) animation).setTarget(target);
+            }
+        }
     }
 
     /**
@@ -830,33 +830,6 @@ public final class AnimatorSet extends Animator
         }
 
         /**
-         * Ignore cancel events for now. We may want to handle this eventually,
-         * to prevent follow-on animations from running when some dependency
-         * animation is canceled.
-         */
-        public void onAnimationCancel(Animator animation)
-        {
-        }
-
-        /**
-         * An end event is received - see if this is an event we are listening for
-         */
-        public void onAnimationEnd(Animator animation)
-        {
-            if (mRule == Dependency.AFTER)
-            {
-                startIfReady(animation);
-            }
-        }
-
-        /**
-         * Ignore repeat events for now
-         */
-        public void onAnimationRepeat(Animator animation)
-        {
-        }
-
-        /**
          * A start event is received - see if this is an event we are listening for
          */
         public void onAnimationStart(Animator animation)
@@ -865,6 +838,13 @@ public final class AnimatorSet extends Animator
             {
                 startIfReady(animation);
             }
+        }        /**
+         * Ignore cancel events for now. We may want to handle this eventually,
+         * to prevent follow-on animations from running when some dependency
+         * animation is canceled.
+         */
+        public void onAnimationCancel(Animator animation)
+        {
         }
 
         /**
@@ -903,7 +883,27 @@ public final class AnimatorSet extends Animator
                 mNode.animation.start();
                 mAnimatorSet.mPlayingSet.add(mNode.animation);
             }
+        }        /**
+         * An end event is received - see if this is an event we are listening for
+         */
+        public void onAnimationEnd(Animator animation)
+        {
+            if (mRule == Dependency.AFTER)
+            {
+                startIfReady(animation);
+            }
         }
+
+        /**
+         * Ignore repeat events for now
+         */
+        public void onAnimationRepeat(Animator animation)
+        {
+        }
+
+
+
+
 
     }
 

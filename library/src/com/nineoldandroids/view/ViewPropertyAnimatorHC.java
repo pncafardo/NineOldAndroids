@@ -145,27 +145,6 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
     }
 
     /**
-     * Sets the duration for the underlying animator that animates the requested properties.
-     * By default, the animator uses the default value for ValueAnimator. Calling this method
-     * will cause the declared value to be used instead.
-     *
-     * @param duration The length of ensuing property animations, in milliseconds. The value
-     *                 cannot be negative.
-     * @return This object, allowing calls to methods in this class to be chained.
-     */
-    public ViewPropertyAnimator setDuration(long duration)
-    {
-        if (duration < 0)
-        {
-            throw new IllegalArgumentException("Animators cannot have negative duration: " +
-                                                       duration);
-        }
-        mDurationSet = true;
-        mDuration = duration;
-        return this;
-    }
-
-    /**
      * Returns the current duration of property animations. If the duration was set on this
      * object, that value is returned. Otherwise, the default value of the underlying Animator
      * is returned.
@@ -185,6 +164,27 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
             // the value has not been set otherwise
             return new ValueAnimator().getDuration();
         }
+    }
+
+    /**
+     * Sets the duration for the underlying animator that animates the requested properties.
+     * By default, the animator uses the default value for ValueAnimator. Calling this method
+     * will cause the declared value to be used instead.
+     *
+     * @param duration The length of ensuing property animations, in milliseconds. The value
+     *                 cannot be negative.
+     * @return This object, allowing calls to methods in this class to be chained.
+     */
+    public ViewPropertyAnimator setDuration(long duration)
+    {
+        if (duration < 0)
+        {
+            throw new IllegalArgumentException("Animators cannot have negative duration: " +
+                                                       duration);
+        }
+        mDurationSet = true;
+        mDuration = duration;
+        return this;
     }
 
     @Override
@@ -688,6 +688,23 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
         }
 
         @Override
+        public void onAnimationEnd(Animator animation)
+        {
+            if (mListener != null)
+            {
+                mListener.onAnimationEnd(animation);
+            }
+            mAnimatorMap.remove(animation);
+            // If the map is empty, it means all animation are done or canceled, so the listener
+            // isn't needed anymore. Not nulling it would cause it to leak any objects used in
+            // its implementation
+            if (mAnimatorMap.isEmpty())
+            {
+                mListener = null;
+            }
+        }
+
+        @Override
         public void onAnimationCancel(Animator animation)
         {
             if (mListener != null)
@@ -702,23 +719,6 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
             if (mListener != null)
             {
                 mListener.onAnimationRepeat(animation);
-            }
-        }
-
-        @Override
-        public void onAnimationEnd(Animator animation)
-        {
-            if (mListener != null)
-            {
-                mListener.onAnimationEnd(animation);
-            }
-            mAnimatorMap.remove(animation);
-            // If the map is empty, it means all animation are done or canceled, so the listener
-            // isn't needed anymore. Not nulling it would cause it to leak any objects used in
-            // its implementation
-            if (mAnimatorMap.isEmpty())
-            {
-                mListener = null;
             }
         }
 

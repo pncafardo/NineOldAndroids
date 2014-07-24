@@ -156,6 +156,15 @@ class ReflectiveProperty<T, V> extends Property<T, V>
         return true;
     }
 
+    /**
+     * Returns false if there is no setter or public field underlying this Property.
+     */
+    @Override
+    public boolean isReadOnly()
+    {
+        return (mSetter == null && mField == null);
+    }
+
     @Override
     public void set(T object, V value)
     {
@@ -222,14 +231,5 @@ class ReflectiveProperty<T, V> extends Property<T, V>
         }
         // Should not get here: there should always be a non-null getter or field
         throw new AssertionError();
-    }
-
-    /**
-     * Returns false if there is no setter or public field underlying this Property.
-     */
-    @Override
-    public boolean isReadOnly()
-    {
-        return (mSetter == null && mField == null);
     }
 }

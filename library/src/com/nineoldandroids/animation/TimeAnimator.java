@@ -15,6 +15,23 @@ public class TimeAnimator extends ValueAnimator
     private TimeListener mListener;
     private long mPreviousTime = -1;
 
+    /**
+     * Sets a listener that is sent update events throughout the life of
+     * an animation.
+     *
+     * @param listener the listener to be set.
+     */
+    public void setTimeListener(TimeListener listener)
+    {
+        mListener = listener;
+    }
+
+    @Override
+    void initAnimation()
+    {
+        // noop
+    }
+
     @Override
     boolean animationFrame(long currentTime)
     {
@@ -42,27 +59,10 @@ public class TimeAnimator extends ValueAnimator
         return false;
     }
 
-    /**
-     * Sets a listener that is sent update events throughout the life of
-     * an animation.
-     *
-     * @param listener the listener to be set.
-     */
-    public void setTimeListener(TimeListener listener)
-    {
-        mListener = listener;
-    }
-
     @Override
     void animateValue(float fraction)
     {
         // Noop
-    }
-
-    @Override
-    void initAnimation()
-    {
-        // noop
     }
 
     /**
