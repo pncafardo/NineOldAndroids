@@ -44,7 +44,6 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
     private static final int X = 0x0080;
     private static final int Y = 0x0100;
 
-    HashMap
     private static final int TRANSFORM_MASK = TRANSLATION_X | TRANSLATION_Y | SCALE_X | SCALE_Y |
             ROTATION | ROTATION_X | ROTATION_Y | X | Y;
     private static final int ALPHA = 0x0200;
