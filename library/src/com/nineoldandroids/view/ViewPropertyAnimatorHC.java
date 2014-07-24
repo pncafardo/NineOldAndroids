@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.animation.Interpolator;
 import com.nineoldandroids.animation.Animator;
 import com.nineoldandroids.animation.ValueAnimator;
+import com.nineoldandroids.util.NameValuesHolder;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -412,7 +413,7 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
         for (int i = 0; i < propertyCount; ++i)
         {
             NameValuesHolder nameValuesHolder = nameValueList.get(i);
-            propertyMask |= nameValuesHolder.mNameConstant;
+            propertyMask |= nameValuesHolder.getNameConstant();
         }
         mAnimatorMap.put(animator, new PropertyBundle(propertyMask, nameValueList));
         animator.addUpdateListener(mAnimatorEventListener);
@@ -656,7 +657,7 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
                 for (int i = 0; i < count; ++i)
                 {
                     NameValuesHolder nameValuesHolder = mNameValuesHolder.get(i);
-                    if (nameValuesHolder.mNameConstant == propertyConstant)
+                    if (nameValuesHolder.getNameConstant() == propertyConstant)
                     {
                         mNameValuesHolder.remove(i);
                         mPropertyMask &= ~propertyConstant;
@@ -665,26 +666,6 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
                 }
             }
             return false;
-        }
-    }
-
-    /**
-     * This is the information we need to set each property during the animation.
-     * mNameConstant is used to set the appropriate field in View, and the from/delta
-     * values are used to calculate the animated value for a given animation fraction
-     * during the animation.
-     */
-    private static class NameValuesHolder
-    {
-        int mNameConstant;
-        float mFromValue;
-        float mDeltaValue;
-
-        NameValuesHolder(int nameConstant, float fromValue, float deltaValue)
-        {
-            mNameConstant = nameConstant;
-            mFromValue = fromValue;
-            mDeltaValue = deltaValue;
         }
     }
 
@@ -777,11 +758,11 @@ class ViewPropertyAnimatorHC extends ViewPropertyAnimator
                 for (int i = 0; i < count; ++i)
                 {
                     NameValuesHolder values = valueList.get(i);
-                    float value = values.mFromValue + fraction * values.mDeltaValue;
+                    float value = values.getFromValue() + fraction * values.getDeltaValue();
                     //if (values.mNameConstant == ALPHA) {
                     //    alphaHandled = mView.setAlphaNoInvalidation(value);
                     //} else {
-                    setValue(values.mNameConstant, value);
+                    setValue(values.getNameConstant(), value);
                     //}
                 }
             }
